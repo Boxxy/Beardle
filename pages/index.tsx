@@ -1,53 +1,28 @@
 import * as React from "react";
 import type { NextPage } from "next";
 import Typography from "@mui/material/Typography";
-import {
-  Autocomplete,
-  Button,
-  Container,
-  IconButton,
-  TextField,
-} from "@mui/material";
-import { PlayCircle, Stop } from "@mui/icons-material";
+import { Autocomplete, Button, Container, TextField } from "@mui/material";
 import sampleSongs from "../data/sampleSongs";
 import { Song } from "../data/Song";
+import MusicPlayer from "../components/MusicPlayer";
 
 const trackNumber = Math.floor(Math.random() * sampleSongs.length);
 
 const Home: NextPage = () => {
   const answer = sampleSongs[trackNumber];
-  const songUrl: string = "./" + answer.fileName;
-
-  const [playing, setPlaying] = React.useState(false);
-  const [audio] = React.useState(
-    typeof Audio !== "undefined" ? new Audio(songUrl) : undefined
-  );
   const [guess, setGuess] = React.useState<Song | null>(null);
-
-  const handlePlay = () => {
-    if (!playing) {
-      setPlaying(true);
-      if (audio != null) {
-        audio.play();
-      }
-    }
-  };
-
-  const handlePause = () => {
-    if (playing) {
-      setPlaying(false);
-      if (audio != null) {
-        audio.pause();
-      }
-    }
-  };
+  const [guessesUsed, setGuessesUsed] = React.useState(0);
 
   const handleSubmit = () => {
     if (guess == answer) {
       alert('Correct it was "' + answer.title + '" by ' + answer.artist);
     } else {
-      alert("Wrong it was " + answer.title + " by " + answer.artist);
+      setGuessesUsed(guessesUsed + 1);
     }
+  };
+
+  const handleSkip = () => {
+    setGuessesUsed(guessesUsed + 1);
   };
 
   return (
@@ -55,16 +30,7 @@ const Home: NextPage = () => {
       <Typography variant="h1" component="div" gutterBottom>
         Beardle
       </Typography>
-      {!playing && (
-        <IconButton onClick={handlePlay}>
-          <PlayCircle />
-        </IconButton>
-      )}
-      {playing && (
-        <IconButton onClick={handlePause}>
-          <Stop />
-        </IconButton>
-      )}
+      <MusicPlayer song={answer} guessesUsed={guessesUsed} />
       <Autocomplete
         disablePortal
         id="guess-box"
@@ -74,7 +40,9 @@ const Home: NextPage = () => {
         sx={{ width: 800 }}
         renderInput={(params) => <TextField {...params} label="Guess" />}
       />
-      <Button variant="outlined">Skip</Button>
+      <Button variant="outlined" onClick={handleSkip}>
+        Skip
+      </Button>
       <Button
         variant="contained"
         disabled={guess == null}
