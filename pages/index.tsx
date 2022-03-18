@@ -5,23 +5,31 @@ import { Autocomplete, Button, Container, TextField } from "@mui/material";
 import sampleSongs from "../data/sampleSongs";
 import { Song } from "../data/Song";
 import MusicPlayer from "../components/MusicPlayer";
+import GuessArea from "../components/GuessArea";
 
 const trackNumber = Math.floor(Math.random() * sampleSongs.length);
 
 const Home: NextPage = () => {
   const answer = sampleSongs[trackNumber];
   const [guess, setGuess] = React.useState<Song | null>(null);
+  const [guesses, setGuesses] = React.useState(["", "", "", "", "", ""]);
   const [guessesUsed, setGuessesUsed] = React.useState(0);
 
   const handleSubmit = () => {
     if (guess == answer) {
       alert('Correct it was "' + answer.title + '" by ' + answer.artist);
-    } else {
+    } else if (guess != null) {
+      const newGuesses = [...guesses];
+      newGuesses[guessesUsed] = guess.artist + " - " + guess.title;
+      setGuesses(newGuesses);
       setGuessesUsed(guessesUsed + 1);
     }
   };
 
   const handleSkip = () => {
+    const newGuesses = [...guesses];
+    newGuesses[guessesUsed] = "SKIPPED";
+    setGuesses(newGuesses);
     setGuessesUsed(guessesUsed + 1);
   };
 
@@ -30,6 +38,7 @@ const Home: NextPage = () => {
       <Typography variant="h1" component="div" gutterBottom>
         Beardle
       </Typography>
+      <GuessArea guesses={guesses} />
       <MusicPlayer song={answer} guessesUsed={guessesUsed} />
       <Autocomplete
         disablePortal
