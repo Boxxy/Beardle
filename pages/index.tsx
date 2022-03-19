@@ -15,6 +15,10 @@ const Home: NextPage = () => {
   const [guesses, setGuesses] = React.useState(["", "", "", "", "", ""]);
   const [guessesUsed, setGuessesUsed] = React.useState(0);
 
+  function handleLoss() {
+    alert('Oof it was "' + answer.title + '" by ' + answer.artist);
+  }
+
   const handleSubmit = () => {
     if (guess == answer) {
       alert('Correct it was "' + answer.title + '" by ' + answer.artist);
@@ -23,6 +27,9 @@ const Home: NextPage = () => {
       newGuesses[guessesUsed] = guess.artist + " - " + guess.title;
       setGuesses(newGuesses);
       setGuessesUsed(guessesUsed + 1);
+      if (guessesUsed > 5) {
+        handleLoss();
+      }
     }
   };
 
@@ -31,6 +38,9 @@ const Home: NextPage = () => {
     newGuesses[guessesUsed] = "SKIPPED";
     setGuesses(newGuesses);
     setGuessesUsed(guessesUsed + 1);
+    if (guessesUsed > 5) {
+      handleLoss();
+    }
   };
 
   return (
@@ -43,7 +53,15 @@ const Home: NextPage = () => {
       <Autocomplete
         disablePortal
         id="guess-box"
-        options={sampleSongs}
+        options={sampleSongs.sort((a: Song, b: Song) => {
+          if (a.artist < b.artist) {
+            return -1;
+          }
+          if (a.artist > b.artist) {
+            return 1;
+          }
+          return 0;
+        })}
         onChange={(event, value) => setGuess(value)}
         getOptionLabel={(song) => song.artist + " - " + song.title}
         sx={{ width: 800 }}
