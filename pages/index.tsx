@@ -53,15 +53,7 @@ const Home: NextPage = () => {
       <Autocomplete
         disablePortal
         id="guess-box"
-        options={sampleSongs.sort((a: Song, b: Song) => {
-          if (a.artist < b.artist) {
-            return -1;
-          }
-          if (a.artist > b.artist) {
-            return 1;
-          }
-          return 0;
-        })}
+        options={sampleSongs}
         onChange={(event, value) => setGuess(value)}
         getOptionLabel={(song) => song.artist + " - " + song.title}
         sx={{ width: 800 }}
